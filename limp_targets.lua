@@ -35,7 +35,7 @@ local function configure_limp_target (t, configured, search_paths)
       return limp_target(path, force, inputs)
    else
       local path = expand_path(t, search_paths)
-      return limp_target(path)
+      return limp_target(path, true)
    end
 end
 
