@@ -83,8 +83,8 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
 
    if configured.is_ext_lib then
       name_suffix 'extlib'
-      option '/GA'   -- TLS Optimization
-      option '/W3'
+      option '/GA'    -- TLS Optimization
+      option '/W3'    -- Warning level 3
       option '/Zm120' -- increase PCH memory allocation limit (glbinding)
       define '_CRT_SECURE_NO_WARNINGS'
       define '_SCL_SECURE_NO_WARNINGS'
@@ -96,9 +96,9 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       elseif configured.is_lib then
          name_suffix 'lib'
          define 'BE_STATIC_LIB'
-         option '/GA'   -- TLS Optimization
+         option '/GA'         -- TLS Optimization
       else
-         option '/GA'   -- TLS Optimization
+         option '/GA'         -- TLS Optimization
          option '/Gw'         -- Optimize globals
          option '/Zc:inline'  -- Remove unused symbols
       end
@@ -109,8 +109,8 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       define('_HAS_AUTO_PTR_ETC', 1)
       define('SQLITE_WIN32_GETVERSIONEX', 0)
       define 'GLM_FORCE_SSE4'
-      option '/W4'     -- warning level 4
-      option '/WX'     -- warnings are errors
+      option '/W4'          -- warning level 4
+      option '/WX'          -- warnings are errors
       disable_warning(4201) -- nameless struct/union
       disable_warning(4324) -- struct padding due to alignas()
       disable_warning(4458) -- declaration hides class member
