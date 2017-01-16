@@ -181,20 +181,16 @@ function expand_path (path, search_path)
    end
 end
 
-function expand_pathspec (pathspec, search_path, configured_project, globtype)
+function expand_pathspec (pathspec, search_path, configured_project, globtype, named_properties)
    if type(pathspec) == 'table' then
       local paths = { }
-
-      if pathspec.exclude then
-         pathspec[#pathspec + 1] = exclude(pathspec.exclude)
-      end
-
+      named_properties = named_properties or { }
       for i = 1, #pathspec do
          local entry = pathspec[i]
          if type(entry) == 'function' then
-            paths = entry(paths, search_path, configured_project, globtype)
+            paths = entry(paths, named_properties, search_path, configured_project, globtype)
          else
-            local subpaths = expand_pathspec(entry, search_path, configured_project, globtype)
+            local subpaths = expand_pathspec(entry, search_path, configured_project, globtype, named_properties)
             for i = 1, #subpaths do
                local subpath = subpaths[i]
                local good = true;
@@ -212,6 +208,9 @@ function expand_pathspec (pathspec, search_path, configured_project, globtype)
          end
       end
       table.sort(paths)
+      for k,v in pairs(named_properties) do
+         paths[k] = v
+      end
       return paths
    else
       local globstring = interpolate_string(tostring(pathspec), configured_project)
@@ -225,7 +224,7 @@ function expand_pathspec (pathspec, search_path, configured_project, globtype)
 end
 
 function build_scripts.env.exclude (pathspec)
-   return function (paths, search_path, configured_project, globtype)
+   return function (paths, named_properties, search_path, configured_project, globtype)
       local excluded_paths = expand_pathspec(pathspec, search_path, configured_project, globtype)
       local new_paths = { }
       local n = 0
@@ -265,7 +264,7 @@ function default_include_paths (configured_project)
 end
 
 function default_source_patterns (configured_project)
-   if configured_project.is_ext or (configured_project.src_no_pch and #configured_project.src_no_pch > 0) then
+   if configured_project.is_ext then
       return { }
    end
    

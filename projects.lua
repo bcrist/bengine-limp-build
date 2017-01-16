@@ -134,31 +134,31 @@ function configure_project (project, toolchain, configuration, configured_group)
 
    local search_paths = { configured.path, root_dir }
 
+   configured.include = expand_pathspec(configured.include or default_include_paths(configured), search_paths, configured, 'd?')
+
+   if not configured.src then
+      configured.src = { expand_pathspec(default_source_patterns(configured), search_paths, configured) }
+   else
+      for i = 1, #configured.src do
+         local expanded = expand_pathspec(configured.src[i], search_paths, configured)
+         if expanded.pch_src and not expanded.pch then
+            expanded.pch = 'pch.hpp'
+         end
+         configured.src[i] = expanded
+      end
+      
+   end
+
+   configured.link = interpolate_sequence(configured.link or { }, configured)
+   configured.link_internal = interpolate_sequence(configured.link_internal or { }, configured)
+   configured.link_project = interpolate_sequence(configured.link_project or { }, configured)
+
    if configured.icon then
       configured.icon = expand_path(configured.icon, search_paths)
       if not configured.icon then
          error('Could not locate icon for project "' .. configured.name .. '"')
       end
    end
-
-   if configured.pch_src then
-      configured.pch_src = expand_path(configured.pch_src, search_paths)
-      if not configured.pch_src then
-         error('Could not locate PCH source file for project "' .. configured.name .. '"')
-      end
-
-      if not configured.pch then
-         configured.pch = 'pch.hpp'
-      end
-   end
-
-   configured.src_no_pch = expand_pathspec(configured.src_no_pch or { }, search_paths, configured)
-   configured.src = expand_pathspec(configured.src or default_source_patterns(configured), search_paths, configured)
-   configured.include = expand_pathspec(configured.include or default_include_paths(configured), search_paths, configured, 'd?')
-
-   configured.link = interpolate_sequence(configured.link or { }, configured)
-   configured.link_internal = interpolate_sequence(configured.link_internal or { }, configured)
-   configured.link_project = interpolate_sequence(configured.link_project or { }, configured)
 
    for k, v in pairs(configured) do
       if not protected_config_properties[k] and type(v) == 'string' then

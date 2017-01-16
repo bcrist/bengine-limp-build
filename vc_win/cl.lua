@@ -97,46 +97,59 @@ end
 function make_cl_targets (configured)
    local add_obj, obj_paths = make_append_fn()
 
-   for i = 1, #configured.src_no_pch do
-      local src_path = configured.src_no_pch[i]
-      local obj_path = get_obj_path(configured, src_path)
-
-      make_cl_target(obj_path, src_path, configured.cl_flags) {
-         pdb = configured.build_pdb_path,
-         extra = configured.cl_extra
-      }
-      add_obj(obj_path)
-   end
-
-   local implicit_pch
-   if configured.pch_src then
-      local obj_path = get_obj_path(configured, configured.pch_src)
-      configured.cl_extra = configured.cl_extra .. ' /Fp"' .. configured.pch_path .. '"'
-      
-      make_cl_target(obj_path, configured.pch_src, configured.cl_flags) {
-         pdb = configured.build_pdb_path,
-         extra = configured.cl_extra .. ' /Yc"' .. configured.pch .. '"'
-      }
-      make_phony_target(configured.pch_path) {
-         inputs = { obj_path } -- pch was actually created at the same time as obj
-      }
-
-      implicit_pch = { configured.pch_path }
-      configured.cl_extra = configured.cl_extra .. ' /Yu"' .. configured.pch .. '"'
-   end
+   local pch_paths = { }
+   local n_pch_paths = 0
 
    for i = 1, #configured.src do
-      local src_path = configured.src[i]
-      local obj_path = get_obj_path(configured, src_path)
+      local src_set = configured.src[i]
+      local cl_extra = configured.cl_extra
 
-      if not configured.pch_src or not fs.equivalent(configured.pch_src, src_path) then
+      local implicit_pch
+      if src_set.pch_src then
+         local pch_path = pch_paths[src_set.pch_src]
+         local add_pch_src_cl_targets = false
+
+         if not pch_path then
+            local pch_filename = configured.output_base
+            if n_pch_paths > 0 then
+               pch_filename = pch_filename .. n_pch_paths
+            end
+
+            pch_path = fs.compose_path(build_dir(), pch_filename .. '.pch')
+            pch_paths[src_set.pch_src] = pch_path
+            add_pch_src_cl_targets = true
+            n_pch_paths = n_pch_paths + 1
+         end
+         
+         cl_extra = cl_extra .. ' /Fp"' .. pch_path .. '"'
+
+         if add_pch_src_cl_targets then
+            local obj_path = get_obj_path(configured, src_set.pch_src)
+            make_cl_target(obj_path, src_set.pch_src, configured.cl_flags) {
+               pdb = configured.build_pdb_path,
+               extra = cl_extra .. ' /Yc"' .. src_set.pch .. '"'
+            }
+            add_obj(obj_path)
+            make_phony_target(pch_path) {
+               inputs = { obj_path } -- pch was actually created at the same time as obj
+            }
+         end
+
+         cl_extra = cl_extra .. ' /Yu"' .. src_set.pch .. '"'
+         implicit_pch = { pch_path }
+      end
+
+      for j = 1, #src_set do
+         local src_path = src_set[j]
+         local obj_path = get_obj_path(configured, src_path)
+
          make_cl_target(obj_path, src_path, configured.cl_flags) {
             pdb = configured.build_pdb_path,
-            extra = configured.cl_extra,
+            extra = cl_extra,
             implicit_inputs = implicit_pch
          }
+         add_obj(obj_path)
       end
-      add_obj(obj_path)
    end
 
    return obj_paths

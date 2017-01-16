@@ -53,7 +53,6 @@ function hooks.preprocess_project (configured)
 
    configured.output_filename = base .. ext
    configured.pdb_filename = base .. '.pdb'
-   configured.pch_filename = base .. '.pch'
 
    configured.output_path = fs.compose_path(rel_dir, configured.output_filename)
    configured.output_path_abs = fs.compose_path(abs_dir, configured.output_filename)
@@ -63,9 +62,6 @@ function hooks.preprocess_project (configured)
 
    configured.build_pdb_path = fs.compose_path(rel_build_dir, configured.pdb_filename)
    configured.build_pdb_path_abs = fs.compose_path(abs_build_dir, configured.pdb_filename)
-
-   configured.pch_path = fs.compose_path(rel_build_dir, configured.pch_filename)
-   configured.pch_path_abs = fs.compose_path(abs_build_dir, configured.pch_filename)
 
    configured.cl_flags = get_cl_flags_var(configured)
 

@@ -26,6 +26,7 @@ make_rule 'lib' {
 function configure_lib_flags (configured, disable_warning, option, name_suffix)
    if configured.is_ext_lib then
       name_suffix 'extlib'
+      disable_warning(4221) -- No public symbols
    else
       option '/WX'  -- warnings are errors
       disable_warning(4221) -- No public symbols

@@ -1,3 +1,4 @@
+local fs = require('be.fs')
 
 function build_scripts.env.icon (path)
    if type(path) ~= 'string' then
@@ -17,27 +18,38 @@ function build_scripts.env.include (spec)
    end
 end
 
+function build_scripts.env.pch (filename)
+   if type(filename) ~= 'string' then
+      error 'PCH filename must be a string!'
+   end
+   return function (paths, named_properties)
+      named_properties.pch = filename
+      return paths
+   end
+end
+
 function build_scripts.env.pch_src (path)
    if type(path) ~= 'string' then
-      error 'PCH path must be a string!'
+      error 'PCH source path must be a string!'
    end
-   return function (configured)
-      if configured.pch_src then
-         error ('PCH already specified for project ' .. configured.name)
+   return function (paths, named_properties, search_path, configured_project, globtype)
+      named_properties.pch_src = expand_path(path, search_path)
+      local new_paths = { }
+      local n = 0
+      for i = 1, #paths do
+         local path = paths[i]
+         if not fs.equivalent(path, named_properties.pch_src) then
+            n = n + 1
+            new_paths[n] = path
+         end
       end
-      configured.pch_src = path
+      return new_paths
    end
 end
 
 function build_scripts.env.src (pathspec)
    return function (configured)
       configured.src = append_sequence({ pathspec }, configured.src)
-   end
-end
-
-function build_scripts.env.src_no_pch (pathspec)
-   return function (configured)
-      configured.src_no_pch = append_sequence({ pathspec }, configured.src_no_pch)
    end
 end
 

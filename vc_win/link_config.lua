@@ -43,7 +43,7 @@ make_rule 'pdb' {
    description = 'pdb $in'
 }
 
-function configure_link_flags (configured, ignore_warning, option, name_suffix)
+function configure_link_flags (configured, disable_warning, option, name_suffix)
    if configured.console then
       name_suffix 'console'
       option '/SUBSYSTEM:CONSOLE'
@@ -53,10 +53,11 @@ function configure_link_flags (configured, ignore_warning, option, name_suffix)
 
    if configured.is_ext_lib then
       name_suffix 'extlib'
+      disable_warning(4221) -- No public symbols
    else
       option('/LIBPATH:"' .. out_dir() .. '"')
       option '/WX'  -- warnings are errors
-      ignore_warning(4221) -- No public symbols
+      disable_warning(4221) -- No public symbols
    end
 
    if configured.configuration == 'debug' then

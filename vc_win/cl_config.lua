@@ -144,7 +144,7 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       option '/Ox'   -- Full optimization
       option '/MD'   -- Multithreaded DLL CRT
       option '/GL'   -- Whole Program Optimization
-      option '/sdl-' -- Disable extra SDL checks
+      -- option '/sdl-' -- Disable extra SDL checks -- implied by /GS-
       option '/GS-'  -- Disable buffer overrun check
    end
 end 
