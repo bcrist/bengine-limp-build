@@ -23,6 +23,7 @@ set_global('cl_base_flags', table.concat({
 
 set_global('cl_base_defines', serialize_defines {
    _WINDOWS = '',
+   SYSTEM_WINDOWS = '',
    WIN32 = '',
    _WIN32 = '',
    _WIN32_WINNT = '0x0601'
@@ -50,6 +51,8 @@ make_rule 'cl' {
 }
 
 function configure_cl_flags (configured, define, disable_warning, option, name_suffix)
+   disable_warning(4592) -- symbol will be dynamically initialized - can probably be removed after VS2017
+
    if configured.force_cxx then
       name_suffix 'cxx'
       option '/TP'
@@ -81,8 +84,10 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
    if configured.is_ext_lib then
       name_suffix 'extlib'
       option '/GA'   -- TLS Optimization
-      define '_CRT_SECURE_NO_WARNINGS'
       option '/W3'
+      option '/Zm120' -- increase PCH memory allocation limit (glbinding)
+      define '_CRT_SECURE_NO_WARNINGS'
+      define '_SCL_SECURE_NO_WARNINGS'
       disable_warning(4334) -- result of 32-bit shift implicitly converted to 64 bits (Lua)
       disable_warning(4267) -- narrowing conversion (zlib)
    else
@@ -110,7 +115,6 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       disable_warning(4324) -- struct padding due to alignas()
       disable_warning(4458) -- declaration hides class member
       disable_warning(4503) -- 'identifier' : decorated name length exceeded, name was truncated
-      disable_warning(4592) -- symbol will be dynamically initialized
       disable_warning(5030) -- Unrecognized attribute
 
       --disable_warning(4310) -- cast truncates literal
@@ -141,6 +145,6 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       option '/MD'   -- Multithreaded DLL CRT
       option '/GL'   -- Whole Program Optimization
       option '/sdl-' -- Disable extra SDL checks
-      option '/GS'   -- buffer overrun check
+      option '/GS-'  -- Disable buffer overrun check
    end
 end 
