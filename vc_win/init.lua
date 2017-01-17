@@ -105,7 +105,7 @@ function configure_init_end ()
    local boost_log_target = fs.compose_path(build_dir(), '.boost_log')
    make_build_boost_target(boost_log_target) { }
    make_phony_target '%BOOST_HOME%\\boost' {
-      inputs = { boost_log_target }
+      order_only_inputs = { boost_log_target }
    }
 
    add_init_target(make_lndir_target(fs.compose_path(ext_include_dir(), 'boost'), '%BOOST_HOME%\\boost') {
@@ -114,8 +114,7 @@ function configure_init_end ()
 
    local initialized_target = fs.compose_path(build_dir(), '.i9d')
 
-   make_touch_target(initialized_target) {
-      path = initialized_target,
+   make_putfile_target(initialized_target, '.') {
       implicit_inputs = init_targets
    }
 

@@ -131,6 +131,8 @@ perf_end 'preprocess'
 perf_begin 'process'
 
 local external_targets = { }
+local test_targets = { }
+
 local all_targets = { }
 local all_config_targets = { }
 
@@ -174,8 +176,25 @@ for g = 1, #groups do
          local target
          if configured_project and toolchain_hooks.process then
             target = toolchain_hooks.process(configured_project, configs)
-            if target and configured_project.is_ext then
-               external_targets[#external_targets+1] = target
+            if target then
+               if configured_project.is_ext then
+                  external_targets[#external_targets+1] = target
+               end
+               if configured_project.test_type then
+                  local run_test_target_name = 'run-project-' .. configured_project.name .. '-' .. configs[c] .. '!'
+                  make_run_target(run_test_target_name) {
+                     command = target,
+                     implicit_inputs = { target }
+                  }
+
+                  local test_targets_type = 'run-' .. configured_project.test_type .. '-' .. configs[c] .. '!'
+                  if not test_targets[test_targets_type] then
+                     test_targets[test_targets_type] = { }
+                  end
+                  local test_target = test_targets[test_targets_type]
+
+                  test_target[#test_target+1] = run_test_target_name
+               end
             end
          end
 
@@ -246,6 +265,18 @@ make_phony_target 'externals!' {
 }
 
 make_meta_limp_target()
+
+local sorted_test_targets = { }
+for target, inputs in pairs(test_targets) do
+   sorted_test_targets[#sorted_test_targets+1] = { target, inputs }
+end
+table.sort(sorted_test_targets, function (a, b) return a[1] < b[1] end)
+for i = 1, #sorted_test_targets do
+   local target, inputs = table.unpack(sorted_test_targets[i])
+   make_phony_target(target) {
+      inputs = inputs
+   }
+end
 
 perf_end 'process'
 

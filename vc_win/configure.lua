@@ -49,6 +49,7 @@ function hooks.preprocess_project (configured)
    local rel_dir = configured.output_dir
    local abs_dir = configured.output_dir_abs
    local rel_build_dir, abs_build_dir = build_dir()
+   local rel_stage_dir, abs_stage_dir = stage_dir()
    local base = configured.output_base
 
    configured.output_filename = base .. ext
@@ -56,6 +57,11 @@ function hooks.preprocess_project (configured)
 
    configured.output_path = fs.compose_path(rel_dir, configured.output_filename)
    configured.output_path_abs = fs.compose_path(abs_dir, configured.output_filename)
+
+   if configured.is_app then
+      configured.stage_path = fs.compose_path(rel_stage_dir, configured.output_filename)
+      configured.stage_path_abs = fs.compose_path(abs_stage_dir, configured.output_filename)
+   end
 
    configured.pdb_path = fs.compose_path(rel_dir, configured.pdb_filename)
    configured.pdb_path_abs = fs.compose_path(abs_dir, configured.pdb_filename)
@@ -94,17 +100,13 @@ function hooks.process (configured)
 
    if configured.is_lib or configured.is_ext_lib then
       make_lib_target(configured, obj_paths) { }
-
       return configured.output_path
    end
 
    if configured.is_app then
       make_link_target(configured, obj_paths) { }
-      
-      local stage_path = fs.compose_path(stage_dir(), configured.output_filename)
-      make_cp_target(stage_path, configured.output_path) { }
-
-      return stage_path
+      make_cp_target(configured.stage_path, configured.output_path) { }
+      return configured.stage_path
    end
 
    be.log.warning('Skipping unsupported project type for ' .. configured.name)

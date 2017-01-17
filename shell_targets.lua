@@ -81,20 +81,6 @@ function make_mkdir_target (dir)
    end
 end
 
-function make_touch_target (target)
-   if not target then error 'touch target not specified!' end
-   return function (t)
-      t.outputs = { target }
-      if not t.path or target == t.path then
-         t.rule = rule 'touchself'
-      else
-         t.rule = rule 'touch'
-         t.vars = { { name='path', value = t.path } }
-      end
-      return make_target(t)
-   end
-end
-
 function make_putfile_target (dest_path, content)
    if not dest_path then error 'putfile destination path not specified!' end
    if putfile_escape then

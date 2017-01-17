@@ -49,15 +49,6 @@ make_rule 'mkdir' {
    generator = 'true'
 }
 
-make_rule 'touchself' {
-   command = 'cmd /s /c "echo:>nul 2>>"$out""',
-   description = 'touch $out'
-}
-make_rule 'touch' {
-   command = 'cmd /s /c "echo:>nul 2>>"$path""',
-   description = 'touch $path'
-}
-
 make_rule 'putfile' {
    command = 'cmd /s /c "(echo:$contents)>"$out""',
    description = 'putfile $out'
