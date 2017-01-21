@@ -34,7 +34,7 @@ protected_config_properties = {
 
 local function group (group_type, name)
    if not name then
-      error 'Group name not specified!'
+      fatal 'Group name not specified!'
    end
 
    local group = groups.all[name]
@@ -53,12 +53,12 @@ local function group (group_type, name)
    end
 
    if group.type ~= group_type then
-      error('"' .. name .. '" is a ' .. group.type .. ', not a ' .. group_type .. '!')
+      fatal('"' .. name .. '" is a ' .. group.type .. ', not a ' .. group_type .. '!')
    end
 
    return function (t)
       if type(t) ~= 'table' then
-         error 'Expected table!'
+         fatal('Expected table!', nil, { t = be.util.sprint_r(t) })
       end
 
       for k, v in pairs(t) do
@@ -67,7 +67,7 @@ local function group (group_type, name)
          elseif type(k) == 'string' and not protected_config_properties[k] then
             group[k] = v
          else
-            error('The ' .. k .. ' property cannot be set directly!')
+            fatal('The ' .. k .. ' property cannot be set directly!')
          end
       end
    end

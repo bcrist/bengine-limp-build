@@ -66,9 +66,9 @@ function get_cl_flags_var (configured)
 end
 
 function make_cl_target (obj_path, src_path, flags)
-   if not obj_path then error 'cl .obj file not specified!' end
-   if not src_path then error 'cl source file not specified!' end
-   if not flags then error 'cl flags not specified!' end
+   if not obj_path then fatal 'cl .obj file not specified!' end
+   if not src_path then fatal 'cl source file not specified!' end
+   if not flags then fatal 'cl flags not specified!' end
    return function (t)
       t.rule = rule 'cl'
       t.inputs = { src_path }

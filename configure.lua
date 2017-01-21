@@ -1,5 +1,6 @@
 include 'build/perf'
 perf_begin 'configure.lua'
+include 'build/error'
 
 perf_begin 'general includes'
 include 'build/build_scripts'

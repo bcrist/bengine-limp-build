@@ -25,7 +25,7 @@ end
 local function configure_limp_target (t, configured, search_paths)
    if type(t) == 'table' then
       if not t.file then
-         error 'LIMP file not specified!'
+         fatal('LIMP file not specified!', nil, { t = be.util.sprint_r(t) })
       end
       
       local path = expand_path(t.file, search_paths)

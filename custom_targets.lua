@@ -23,7 +23,9 @@ local function configure_custom_target (t, configured, search_paths)
       custom_targets[o] = true
    end
 
-   if found and not_found then error 'Some custom targets have already been defined!' end
+   if found and not_found then
+      warn('Some custom targets have already been defined!', configured, { t = be.util.sprint_r(t) })
+   end
    if found then return end
 
    if not custom_rules[t.rule] then
@@ -45,7 +47,7 @@ local function configure_custom_target (t, configured, search_paths)
       make_rule(t.rule)(extra)
          
    elseif custom_rules[t.rule] ~= t.command then
-      error('a custom build rule named ' .. t.rule .. 'already exists with a different definition!')
+      fatal('a custom build rule named ' .. t.rule .. 'already exists with a different definition!', configured, { t = be.util.sprint_r(t) })
    end
 
    t.implicit_outputs = t.implicit_outputs and expand_pathspec(t.implicit_outputs, search_paths, configured)
@@ -71,7 +73,7 @@ end
 
 function build_scripts.env.custom (t)
    if type(t) ~= 'table' or not t.outputs or not t.rule or not t.command then
-      error 'custom build step must specify at least one output, a rule name, and a command!'
+      fatal('custom build step must specify at least one output, a rule name, and a command!', nil, { t = be.util.sprint_r(t) })
    end
    return function (configured)
       configured.custom = append_sequence({ t }, configured.custom)

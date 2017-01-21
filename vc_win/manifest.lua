@@ -28,7 +28,7 @@ function get_manifest_target (manifest_name, elevated, extra)
 
    if manifests[manifest_name] then
       if manifests[manifest_name] ~= manifest_contents then
-         error('There is already a manifest named "' .. manifest_name .. '" but its contents are different!')
+         fatal('There is already a manifest named "' .. manifest_name .. '" but its contents are different!')
       end
    else
       manifests[manifest_name] = manifest_contents

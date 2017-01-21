@@ -1,7 +1,7 @@
 local fs = require('be.fs')
 
 function make_icon_rc_target (res_path, rc_path, icon_path)
-   if not icon_path then error 'icon path not specified!' end
+   if not icon_path then fatal 'icon path not specified!' end
    local rc_func = make_rc_target(res_path, rc_path)
 
    local escaped_icon_path = icon_path:gsub('["\\]', '\\%0')

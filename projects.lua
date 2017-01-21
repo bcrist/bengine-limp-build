@@ -7,7 +7,7 @@ local projects = {
 local function project (project_type, name_or_suffix)
    local function parse (t)
       if type(t) ~= 'table' then
-         error 'Expected table!'
+         fatal('Expected table!', nil, { t = be.util.sprint_r(t) })
       end
 
       return function (configured_group)
@@ -41,17 +41,17 @@ local function project (project_type, name_or_suffix)
                elseif type(k) == 'string' and not protected_config_properties[k] then
                   project[k] = v
                else
-                  error('The ' .. k .. ' property cannot be set directly!')
+                  fatal('The ' .. k .. ' property cannot be set directly!', project)
                end
             end
          end
 
          if project.type ~= project_type then
-            error('"' .. name .. '" is a ' .. project.type .. ', not a ' .. project_type .. '!')
+            fatal('"' .. name .. '" is a ' .. project.type .. ', not a ' .. project_type .. '!', project)
          end
 
          if project.group ~= configured_group.group then
-            error('A project named "' .. name .. '" already exists in the "' .. project.group.name .. '" ' .. project.group.type)
+            fatal('A project named "' .. name .. '" already exists in the "' .. project.group.name .. '" ' .. project.group.type, project)
          end
       end
    end
@@ -156,7 +156,7 @@ function configure_project (project, toolchain, configuration, configured_group)
    if configured.icon then
       configured.icon = expand_path(configured.icon, search_paths)
       if not configured.icon then
-         error('Could not locate icon for project "' .. configured.name .. '"')
+         fatal('Could not locate icon for project "' .. configured.name .. '"', configured)
       end
    end
 
@@ -173,11 +173,11 @@ local function link_project (configured_project, project_name_to_link)
    local configured = configured_project
    local project_to_link = projects.all[project_name_to_link]
    if not project_to_link then
-      error(configured.name .. ' can\'t link to project "' .. project_name_to_link .. '"; project does not exist!')
+      fatal(configured.name .. ' can\'t link to project "' .. project_name_to_link .. '"; project does not exist!', configured)
    end
 
    if project_to_link.is_app then
-      error(configured.name .. ' can\'t link to project "' .. project_name_to_link .. '"; project is not a library!')
+      fatal(configured.name .. ' can\'t link to project "' .. project_name_to_link .. '"; project is not a library!', configured)
    end
    
    local config_to_link = project_to_link.configurations[configured.configuration]

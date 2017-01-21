@@ -2,11 +2,11 @@ local fs = require('be.fs')
 
 function build_scripts.env.icon (path)
    if type(path) ~= 'string' then
-      error 'Icon path must be a string!'
+      fatal 'Icon path must be a string!'
    end
    return function (configured)
       if configured.icon then
-         error ('Icon already specified for project ' .. configured.name)
+         fatal('Icon already specified', configured)
       end
       configured.icon = path
    end
@@ -20,7 +20,7 @@ end
 
 function build_scripts.env.pch (filename)
    if type(filename) ~= 'string' then
-      error 'PCH filename must be a string!'
+      fatal 'PCH filename must be a string!'
    end
    return function (paths, named_properties)
       named_properties.pch = filename
@@ -30,7 +30,7 @@ end
 
 function build_scripts.env.pch_src (path)
    if type(path) ~= 'string' then
-      error 'PCH source path must be a string!'
+      fatal 'PCH source path must be a string!'
    end
    return function (paths, named_properties, search_path, configured_project, globtype)
       named_properties.pch_src = expand_path(path, search_path)
@@ -99,11 +99,11 @@ end
 
 function build_scripts.env.test_type (test_type)
    if type(path) ~= 'string' then
-      error 'Icon path must be a string!'
+      fatal 'Icon path must be a string!'
    end
    return function (configured)
       if configured.test_type then
-         error ('Test type already specified for project ' .. configured.name)
+         fatal('Test type already specified', configured)
       end
       configured.test_type = test_type
    end

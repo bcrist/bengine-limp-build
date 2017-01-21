@@ -22,7 +22,7 @@ rd /Q /S %~dp0]] .. ext_lib_dir() .. [[\lib ) >nul )]]
 }
 
 local function make_build_boost_target (target)
-   if not target then error 'build_boost target not specified!' end
+   if not target then fatal 'build_boost target not specified!' end
    return function (t)
       t.rule = rule 'build_boost'
       t.outputs = { target }

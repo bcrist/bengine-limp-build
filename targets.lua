@@ -4,15 +4,15 @@ local default_targets = { }
 
 function make_target (t)
    if type(t) ~= 'table' then
-      error 'Expected table!'
+      fatal('Expected table!', nil, { t = be.util.sprint_r(t) })
    end
 
    if type(t.outputs) ~= 'table' then
-      error 'At least one output or target name is required!'
+      fatal('At least one output or target name is required!', nil, { t = be.util.sprint_r(t) })
    end
 
    if t.rule == nil then
-      error 'No rule specified for target!'
+      fatal('No rule specified for target!', nil, { t = be.util.sprint_r(t) })
    end
 
    if t.implicit_outputs then

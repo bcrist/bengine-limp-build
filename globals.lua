@@ -3,7 +3,7 @@ local globals = { }
 
 function set_global (name, value, group)
    if not name then
-      error 'Global name not specified!'
+      fatal 'Global name not specified!'
    end
 
    if not group then

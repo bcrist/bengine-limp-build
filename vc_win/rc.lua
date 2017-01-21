@@ -18,8 +18,8 @@ make_rule 'rc' {
 }
 
 function make_rc_target (res_path, rc_path)
-   if not res_path then error 'icon .res path not specified!' end
-   if not rc_path then error 'icon .rc path not specified!' end
+   if not res_path then fatal 'icon .res path not specified!' end
+   if not rc_path then fatal 'icon .rc path not specified!' end
    return function (t)
       t.rule = rule 'rc'
       t.inputs = { rc_path }

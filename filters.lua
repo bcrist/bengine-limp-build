@@ -2,7 +2,7 @@
 function build_scripts.env.when (fn)
    return function (t)
       if type(t) ~= 'table' then
-         error 'Expected table!'
+         fatal('Expected table!', nil, { t = be.util.sprint_r(t) })
       end
       return function (configured)
          local func = fn
@@ -10,7 +10,7 @@ function build_scripts.env.when (fn)
             local err
             func, err = load('return ' .. fn, 'when()', 't', configured)
             if not func then
-               error(err .. ' When expression: ' .. fn)
+               fatal(err .. ' When expression: ' .. fn, nil, { t = be.util.sprint_r(t) })
             end
          end
 

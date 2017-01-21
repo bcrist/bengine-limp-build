@@ -4,16 +4,16 @@ local rules = { }
 
 function make_rule (name)
    if not name then
-      error 'Rule must have a name!'
+      fatal 'Rule must have a name!'
    end
 
    return function (t)
       if rule_names[name] then
-         error('A rule named "' .. name .. '" already exists!')
+         fatal('A rule named "' .. name .. '" already exists!', nil, { t = be.util.sprint_r(t) })
       end
 
       if not t.command then
-         error 'Rule command is requred!'
+         fatal('Rule command is requred!', nil, { t = be.util.sprint_r(t) })
       end
 
       local vars = { }
@@ -37,7 +37,7 @@ function rule (name)
          r.enabled = true
       end
    else
-      error 'Undefined rule used!'
+      fatal 'Undefined rule used!'
    end
    return name
 end
