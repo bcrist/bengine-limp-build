@@ -115,7 +115,7 @@ function configure_init_end ()
    local initialized_target = fs.compose_path(build_dir(), '.i9d')
 
    make_putfile_target(initialized_target, '.') {
-      implicit_inputs = init_targets
+      order_only_inputs = init_targets
    }
 
    make_phony_target 'init!' {
