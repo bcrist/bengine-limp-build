@@ -201,9 +201,21 @@ end
 function finalize_project_configuration (configured_project, groups)
    local configured = configured_project
 
+   local direct_dependencies = append_sequence(configured.link_project)
+
    for i = 1, #configured.link_project do
       local name = configured.link_project[i]
       link_project(configured_project, name)
+   end
+
+   local dependencies = { }
+   for i = 1, #configured.link_internal do
+      local link_spec = configured.link_internal[i]
+      dependencies[#dependencies + 1] = fs.path_filename(link_spec)
+   end
+
+   if #dependencies > 0 then
+      be.log.verbose('Dependencies for ' .. configured.output_base, { Direct = table.concat(direct_dependencies, '  '), All = table.concat(dependencies, '  ') })
    end
 end
 
