@@ -111,13 +111,14 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       define 'GLM_FORCE_SSE4'
       option '/W4'          -- warning level 4
       option '/WX'          -- warnings are errors
+      disable_warning(4100) -- unreferenced parameter
       disable_warning(4201) -- nameless struct/union
+      disable_warning(4310) -- cast truncates constant value
       disable_warning(4324) -- struct padding due to alignas()
       disable_warning(4458) -- declaration hides class member
       disable_warning(4503) -- 'identifier' : decorated name length exceeded, name was truncated
       disable_warning(5030) -- Unrecognized attribute
-
-      --disable_warning(4310) -- cast truncates literal
+      
       --disable_warning(4351) -- elements of array 'array' will be default initialized
 
       if configured.configuration == 'debug' then
