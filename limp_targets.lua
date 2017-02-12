@@ -32,6 +32,10 @@ local function configure_limp_target (t, configured, search_paths)
       local inputs = expand_pathspec(t.inputs or { }, search_paths, configured)
       local force = t.force or inputs ~= nil
 
+      if not path then
+         fatal('LIMP file not found!', nil, { t = be.util.sprint_r(t) })
+      end
+
       return limp_target(path, force, inputs)
    else
       local path = expand_path(t, search_paths)
