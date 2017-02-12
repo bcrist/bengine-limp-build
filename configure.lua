@@ -21,11 +21,12 @@ include 'build/limp_targets'
 include 'build/custom_targets'
 perf_end 'general includes'
 
-local tc, configs = ...
+local tc, configs, default_targets = ...
 configs = configs or { 'debug', 'release' }
 if type(configs) ~= 'table' then
    configs = { configs }
 end
+default_targets = default_targets or 'all!'
 
 perf_begin 'toolchain include'
 local toolchain_hooks = include('build/' .. tc .. '/configure') or { }
@@ -258,7 +259,6 @@ end
 
 make_phony_target 'all!' {
    inputs = all_targets,
-   default = true
 }
 
 make_phony_target 'externals!' {
@@ -278,6 +278,8 @@ for i = 1, #sorted_test_targets do
       inputs = inputs
    }
 end
+
+add_default_targets(default_targets)
 
 perf_end 'process'
 

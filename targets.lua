@@ -22,10 +22,14 @@ function make_target (t)
    targets[#targets + 1] = t
 
    if t.default then
-      append_sequence(t.outputs, default_targets)
+      append_sequence(t.outputs, default_targets, true)
    end
 
    return t
+end
+
+function add_default_targets(target_names)
+   append_sequence(target_names, default_targets, true)
 end
 
 function write_targets ()
