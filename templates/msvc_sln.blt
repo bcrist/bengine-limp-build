@@ -1,0 +1,71 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{30D01E5F-45FB-49F8-9F5B-3190EB6BADB9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{70015041-07AA-4D46-9353-A6707436F8D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demos", "demos", "{DE3051AC-D7C0-41FB-BF5B-AA6A4156CADC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules-test", "modules-test", "{7E5738D7-7FA0-4690-A20C-ED1A6D11A24F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules-perf", "modules-perf", "{9E8F0AFD-DD53-4393-80A8-976C23D2D8F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules-lua", "modules-lua", "{10AA2CEB-9FD1-4001-9D56-A8CFAEEB144E}"
+EndProject
+`with each configurations using # {
+   if vcxproj_guid {
+      `Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "`name`", "`vcxproj_path`", "{`vcxproj_guid`}"` nl
+      if not is_lib and #linked_configurations > 0 {
+         `	ProjectSection(ProjectDependencies) = postProject` nl
+         with each linked_configurations using # {
+            if vcxproj_guid {
+               `		{`vcxproj_guid`} = {`vcxproj_guid`}` nl
+            }
+         }
+         `	EndProjectSection` nl
+      }
+      `EndProject` nl
+   }
+}
+`Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		debug|x64 = debug|x64
+		debug|x86 = debug|x86
+		release|x64 = release|x64
+		release|x86 = release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution`
+with each configurations using # {
+   if vcxproj_guid {`
+		{`vcxproj_guid`}.debug|x64.ActiveCfg = debug|x64
+		{`vcxproj_guid`}.debug|x64.Build.0 = debug|x64
+		{`vcxproj_guid`}.release|x64.ActiveCfg = release|x64
+		{`vcxproj_guid`}.release|x64.Build.0 = release|x64`
+   }
+}`
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+`with each configurations using # {
+   if vcxproj_guid {
+      guid = vcxproj_guid
+      with group.type choose {
+         ('tool') { `		{`guid`} = {70015041-07AA-4D46-9353-A6707436F8D9}` nl }
+         ('demo') { `		{`guid`} = {DE3051AC-D7C0-41FB-BF5B-AA6A4156CADC}` nl }
+         ('module') {
+            with $$.suffix choose {
+               ('test') { `		{`guid`} = {7E5738D7-7FA0-4690-A20C-ED1A6D11A24F}` nl }
+               ('perf') { `		{`guid`} = {9E8F0AFD-DD53-4393-80A8-976C23D2D8F7}` nl }
+               ('lua')  { `		{`guid`} = {10AA2CEB-9FD1-4001-9D56-A8CFAEEB144E}` nl }
+               ()       { `		{`guid`} = {30D01E5F-45FB-49F8-9F5B-3190EB6BADB9}` nl }
+            }
+         }
+      }
+   }
+}
+`	EndGlobalSection
+EndGlobal`

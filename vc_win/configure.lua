@@ -11,6 +11,9 @@ include 'build/vc_win/init'
 
 local hooks = { }
 
+local project_guids = { }
+local guid_configurations = { }
+
 make_rule 'configure' {
    command = '"$bin_dir\\limp.exe" -f ' .. fs.ancestor_relative(file_path, root_dir),
    description = 'configure',
@@ -82,6 +85,13 @@ function hooks.preprocess_project (configured)
          configured.cl_extra = includes
       end
    end
+
+   local search_paths = { configured.path, root_dir }
+   configured.vcxproj_path = expand_path(configured.name .. '.vcxproj', search_paths)
+   if configured.vcxproj_path then
+      local vcxproj = fs.get_file_contents(fs.compose_path(root_dir, configured.vcxproj_path))
+      configured.vcxproj_guid = vcxproj:match '<ProjectGuid>{([%x%-]+)}</ProjectGuid>'
+   end
 end
 
 function hooks.preprocess_end ()
@@ -92,6 +102,11 @@ end
 function hooks.process (configured)
    if configured.disabled then
       return
+   end
+
+   if configured.vcxproj_guid and not project_guids[configured.vcxproj_guid] then
+      project_guids[configured.vcxproj_guid] = true
+      guid_configurations[#guid_configurations + 1] = configured
    end
 
    make_limp_targets(configured)
@@ -114,6 +129,10 @@ end
 
 function hooks.postprocess_begin ()
    make_meta_pdb_target()
+
+   if #guid_configurations > 0 then
+      fs.put_file_contents(fs.compose_path(root_dir, 'msvc.sln'), template('msvc_sln', { configurations = guid_configurations }))
+   end
 end
 
 return hooks

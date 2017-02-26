@@ -152,6 +152,7 @@ function configure_project (project, toolchain, configuration, configured_group)
    configured.link = interpolate_sequence(configured.link or { }, configured)
    configured.link_internal = interpolate_sequence(configured.link_internal or { }, configured)
    configured.link_project = interpolate_sequence(configured.link_project or { }, configured)
+   configured.linked_configurations = { }
 
    if configured.icon then
       configured.icon = expand_path(configured.icon, search_paths)
@@ -183,6 +184,7 @@ local function link_project (configured_project, project_name_to_link)
    local config_to_link = project_to_link.configurations[configured.configuration]
    local link_spec = fs.compose_path(config_to_link.output_dir, config_to_link.name .. config_to_link.configuration_suffix)
    
+   append_sequence({ config_to_link }, configured.linked_configurations, true)
    append_sequence(config_to_link.link, configured.link, true)
    append_sequence({ link_spec }, configured.link_internal, true)
 

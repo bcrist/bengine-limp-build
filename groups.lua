@@ -28,6 +28,7 @@ protected_config_properties = {
    link = true,
    link_internal = true,
    link_project = true,
+   linked_configurations = true,
    define = true,
    export_define = true
 }
