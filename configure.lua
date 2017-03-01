@@ -62,11 +62,13 @@ perf_end 'configure groups'
 perf_begin 'configure projects'
 for p = 1, #projects do
    local project = projects[p]
+   perf_begin('configure project ' .. project.name)
    for c = 1, #configs do
       local config = configs[c]
       local configured_group = project.group.configurations[config]
       local configured = configure_project(project, tc, config, configured_group)
    end
+   perf_end('configure project ' .. project.name)
 end
 perf_end 'configure projects'
 
