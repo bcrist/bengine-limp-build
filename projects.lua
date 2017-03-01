@@ -211,13 +211,41 @@ function finalize_project_configuration (configured_project, groups)
    end
 
    local dependencies = { }
+   local defines = { }
    for i = 1, #configured.link_internal do
       local link_spec = configured.link_internal[i]
       dependencies[#dependencies + 1] = fs.path_filename(link_spec)
    end
+   for k, v in pairs(configured.define) do
+      if k ~= 'BE_TARGET' and k ~= 'BE_TARGET_BASE' then
+         if v then
+            defines[#defines + 1] = k .. '=' .. v
+         else
+            defines[#defines + 1] = k
+         end
+      end
+   end
 
    if #dependencies > 0 then
-      be.log.verbose('Dependencies for ' .. configured.output_base, { Direct = table.concat(direct_dependencies, '  '), All = table.concat(dependencies, '  ') })
+      dependencies = table.concat(dependencies, '  ')
+   else
+      dependencies = nil
+   end
+
+   if #direct_dependencies > 0 then
+      direct_dependencies = table.concat(direct_dependencies, '  ')
+   else
+      direct_dependencies = nil
+   end
+
+   if #defines > 0 then
+      defines = table.concat(defines, '  ')
+   else
+      defines = nil
+   end
+
+   if dependencies or defines then
+      be.log.verbose('Dependencies for ' .. configured.output_base, { Direct = direct_dependencies, All = dependencies, Defines = defines, })
    end
 end
 
