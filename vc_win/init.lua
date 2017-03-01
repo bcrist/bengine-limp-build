@@ -11,6 +11,7 @@ make_rule 'build_boost' {
    generator = 'true',
    rspfile = 'build_boost.cmd',
    rspfile_content = [[@echo off & $
+(if not exist build md build) & $
 cd %BOOST_HOME% & $
 (if not exist b2.exe call bootstrap.bat) & $
 ((.\b2.exe "--stagedir=%~dp0]] .. ext_lib_dir() .. [[" "--build-dir=%~dp0]] .. build_dir() .. [[" $
@@ -26,7 +27,6 @@ local function make_build_boost_target (target)
    return function (t)
       t.rule = rule 'build_boost'
       t.outputs = { target }
-      t.implicit_inputs = { (build_dir()) }
       return make_target(t)
    end
 end
@@ -57,7 +57,6 @@ local function add_deinit_target (target)
 end
 
 function configure_init_begin ()
-   add_mkdir_init_target((build_dir()))
    add_mkdir_init_target((out_dir()))
    add_mkdir_init_target((include_dir()))
    add_mkdir_init_target((stage_dir()))
@@ -89,7 +88,7 @@ function configure_init_project (configured)
          add_mkdir_init_target(link_parent_path)
          local rel_source_path = expand_path('include', configured.path)
          local t = make_lndir_target(link_path, rel_source_path) {
-            implicit_inputs = { link_parent_path }
+            order_only_inputs = { link_parent_path }
          }
          mkdir_init_targets[link_path] = t
          append_sequence(t.outputs, include_link_targets)

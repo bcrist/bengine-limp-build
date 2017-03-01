@@ -20,8 +20,16 @@ make_rule 'ninjatool'{
 }
 
 make_rule 'limp' {
-   command = '"$bin_dir\\limp.exe" $extra $path',
-   description = 'limp $path',
+   command = '"$bin_dir\\limp.exe" --depfile "$build_dir\\$out.d" -f $out',
+   description = 'limp $out',
+   depfile = '$build_dir\\$out.d',
+   deps = 'gcc',
+   generator = 'true'
+}
+
+make_rule 'limpin' {
+   command = '"$bin_dir\\limp.exe" -f $in',
+   description = 'limp $in',
    generator = 'true'
 }
 

@@ -109,7 +109,10 @@ function hooks.process (configured)
       guid_configurations[#guid_configurations + 1] = configured
    end
 
-   make_limp_targets(configured)
+   if not configured.is_ext then
+      make_limp_targets(configured)
+      find_limp_targets(configured)
+   end
    make_custom_targets(configured)
    local obj_paths = make_cl_targets(configured)
 
