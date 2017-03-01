@@ -91,6 +91,7 @@ function hooks.preprocess_project (configured)
    if configured.vcxproj_path then
       local vcxproj = fs.get_file_contents(fs.compose_path(root_dir, configured.vcxproj_path))
       configured.vcxproj_guid = vcxproj:match '<ProjectGuid>{([%x%-]+)}</ProjectGuid>'
+      configured.vcxproj_has_debug = (vcxproj:match '<ProjectConfiguration Include="debug%|x64">') ~= nil
    end
 end
 

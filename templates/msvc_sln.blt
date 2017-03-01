@@ -38,10 +38,16 @@ EndProject
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution`
 with each configurations using # {
-   if vcxproj_guid {`
+   if vcxproj_guid {
+      if vcxproj_has_debug {`
 		{`vcxproj_guid`}.debug|x64.ActiveCfg = debug|x64
 		{`vcxproj_guid`}.debug|x64.Build.0 = debug|x64
-		{`vcxproj_guid`}.debug|x86.ActiveCfg = debug|x64
+		{`vcxproj_guid`}.debug|x86.ActiveCfg = debug|x64`
+      } else {`
+		{`vcxproj_guid`}.debug|x64.ActiveCfg = release|x64
+		{`vcxproj_guid`}.debug|x64.Build.0 = release|x64
+		{`vcxproj_guid`}.debug|x86.ActiveCfg = release|x64`
+      }`
 		{`vcxproj_guid`}.release|x64.ActiveCfg = release|x64
 		{`vcxproj_guid`}.release|x64.Build.0 = release|x64
 		{`vcxproj_guid`}.release|x86.ActiveCfg = release|x64`
