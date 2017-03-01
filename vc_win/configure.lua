@@ -15,7 +15,7 @@ local project_guids = { }
 local guid_configurations = { }
 
 make_rule 'configure' {
-   command = '"$bin_dir\\limp.exe" -f ' .. fs.ancestor_relative(file_path, root_dir),
+   command = 'limp -f ' .. fs.ancestor_relative(file_path, root_dir),
    description = 'configure',
    generator = 'true'
 }

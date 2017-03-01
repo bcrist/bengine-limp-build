@@ -21,12 +21,19 @@ include 'build/limp_targets'
 include 'build/custom_targets'
 perf_end 'general includes'
 
-local tc, configs, default_targets = ...
+local tc, configs, default_targets, nolimp = ...
+if not default_targets then
+   if not configs then
+      default_targets = 'all-debug!'
+   else
+      default_targets = 'all!'
+   end
+end
 configs = configs or { 'debug', 'release' }
 if type(configs) ~= 'table' then
    configs = { configs }
 end
-default_targets = default_targets or 'all!'
+no_limp = nolimp or not os.execute('limp --test')
 
 perf_begin 'toolchain include'
 local toolchain_hooks = include('build/' .. tc .. '/configure') or { }
@@ -267,7 +274,9 @@ make_phony_target 'externals!' {
    inputs = external_targets
 }
 
-make_meta_limp_target()
+if not no_limp then
+   make_meta_limp_target()
+end
 
 local sorted_test_targets = { }
 for target, inputs in pairs(test_targets) do

@@ -42,7 +42,7 @@ function build_scripts.env.limp (t)
 end
 
 local function make_limp_target (t)
-   if t then
+   if t and not no_limp then
       t.rule = rule 'limp'
       make_target(t)
 
@@ -69,6 +69,10 @@ end
 local searched_include_paths = { include = true } -- just symlinks to actual include dirs here
 
 function find_limp_targets (configured)
+   if no_limp then
+      return
+   end
+
    for i = 1, #configured.include do
       local include_path = configured.include[i]
       if not searched_include_paths[include_path] then
