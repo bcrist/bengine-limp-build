@@ -135,7 +135,12 @@ function hooks.postprocess_begin ()
    make_meta_pdb_target()
 
    if #guid_configurations > 0 then
-      fs.put_file_contents(fs.compose_path(root_dir, 'msvc.sln'), template('msvc_sln', { configurations = guid_configurations }))
+      local sln_path = fs.compose_path(root_dir, 'msvc.sln')
+      local sln_contents = fs.exists(sln_path) and fs.get_file_contents(sln_path)
+      local new_sln_contents = template('msvc_sln', { configurations = guid_configurations })
+      if sln_contents ~= new_sln_contents then
+         fs.put_file_contents(sln_path, new_sln_contents)
+      end
    end
 end
 
