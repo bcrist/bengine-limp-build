@@ -24,7 +24,8 @@ make_rule 'limp' {
    description = 'limp $out',
    depfile = '$build_dir\\$out.d',
    deps = 'gcc',
-   generator = 'true'
+   generator = 'true',
+   restat = 'true'
 }
 
 make_rule 'limpin' {
