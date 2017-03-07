@@ -11,7 +11,7 @@ make_rule 'build_boost' {
    generator = 'true',
    rspfile = 'build_boost.cmd',
    rspfile_content = [[(if not exist build md build) & $
-cd "%BOOST_HOME%"" & $
+cd "%BOOST_HOME%" & $
 (if not exist b2.exe call bootstrap.bat) & $
 ((.\b2.exe "--stagedir=%~dp0]] .. ext_lib_dir() .. [[" "--build-dir=%~dp0]] .. build_dir() .. [[" $
 --build-type=complete -d1 -j4 --with-system --with-locale --with-type_erasure $
