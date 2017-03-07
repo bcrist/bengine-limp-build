@@ -11,14 +11,14 @@ make_rule 'build_boost' {
    generator = 'true',
    rspfile = 'build_boost.cmd',
    rspfile_content = [[(if not exist build md build) & $
-cd "%BOOST_HOME%" & $
+pushd "%BOOST_HOME%" & $
 (if not exist b2.exe call bootstrap.bat) & $
 ((.\b2.exe "--stagedir=%~dp0]] .. ext_lib_dir() .. [[" "--build-dir=%~dp0]] .. build_dir() .. [[" $
 --build-type=complete -d1 -j4 --with-system --with-locale --with-type_erasure $
 define=BOOST_NO_RTTI define=BOOST_NO_TYPEID link=static threading=multi runtime-link=shared address-model=64 $
 stage > "%~dp0]] .. build_dir() .. [[\.boost_log" 2>&1 ) && $
 (move /Y "%~dp0]] .. ext_lib_dir() .. [[\lib\*.lib" "%~dp0]] .. ext_lib_dir() .. [[" && $
-rd /Q /S "%~dp0]] .. ext_lib_dir() .. [[\lib" ) >nul )]]
+rd /Q /S "%~dp0]] .. ext_lib_dir() .. [[\lib" ) >nul ) & popd]]
 }
 
 local function make_build_boost_target (target)
