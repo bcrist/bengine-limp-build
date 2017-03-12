@@ -162,22 +162,29 @@ function ninja_escape (str, escape_dollar)
    return str
 end
 
-function expand_path (path, search_path)
-   if not path then
-      return
-   end
-   if type (search_path) == 'table' then
-      for i = 1, #search_path do
-         local expanded = expand_path(path, search_path[i])
-         if expanded then
-            return expanded
-         end
-      end
-   else
-      path = fs.compose_path(search_path, path)
-      if fs.exists(path) then
-         return fs.ancestor_relative(fs.canonical(path), root_dir)
-      end
+-- function expand_path (path, search_path)
+--    if not path then
+--       return
+--    end
+--    if type (search_path) == 'table' then
+--       for i = 1, #search_path do
+--          local expanded = expand_path(path, search_path[i])
+--          if expanded then
+--             return expanded
+--          end
+--       end
+--    else
+--       path = fs.compose_path(search_path, path)
+--       if fs.exists(path) then
+--          return fs.ancestor_relative(fs.canonical(path), root_dir)
+--       end
+--    end
+-- end
+
+function expand_path (path, search_paths)
+   local path = fs.resolve_path(path, search_paths)
+   if path then
+      return fs.ancestor_relative(fs.canonical(path), root_dir)
    end
 end
 
