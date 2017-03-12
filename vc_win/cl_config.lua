@@ -111,6 +111,7 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       define 'GLM_FORCE_SSE4'
       option '/W4'          -- warning level 4
       option '/WX'          -- warnings are errors
+      disable_warning(4065) -- switch with no case:
       disable_warning(4100) -- unreferenced parameter
       disable_warning(4201) -- nameless struct/union
       disable_warning(4310) -- cast truncates constant value
