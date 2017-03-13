@@ -18,7 +18,8 @@ set_global('cl_base_flags', table.concat({
    '/volatile:iso',
    '/w44746', -- Enable volatile access warning
    '/Qpar',
-   '/Zc:rvalueCast'
+   '/Zc:rvalueCast',
+   '/diagnostics:column'
 }, ' '), cl_flags_global_group)
 
 set_global('cl_base_defines', serialize_defines {
