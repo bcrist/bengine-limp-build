@@ -11,7 +11,7 @@ include 'build/vc_win/init'
 
 local hooks = { }
 
-local project_guids = { }
+local guids = { }
 local guid_configurations = { }
 
 make_rule 'configure' {
@@ -105,9 +105,12 @@ function hooks.process (configured)
       return
    end
 
-   if configured.vcxproj_guid and not project_guids[configured.vcxproj_guid] then
-      project_guids[configured.vcxproj_guid] = true
-      guid_configurations[#guid_configurations + 1] = configured
+   if configured.vcxproj_guid then
+      if not guid_configurations[configured.vcxproj_guid] then
+         guids[#guids + 1] = configured.vcxproj_guid
+         guid_configurations[configured.vcxproj_guid] = { }
+      end
+      append_sequence({ configured }, guid_configurations[configured.vcxproj_guid])
    end
 
    if not configured.is_ext then
@@ -134,10 +137,44 @@ end
 function hooks.postprocess_begin ()
    make_meta_pdb_target()
 
-   if #guid_configurations > 0 then
+   if #guids > 0 then
+      local projects = { }
+      for i = 1, #guids do
+         local linked_guids = { }
+         local project = {
+            guid = guids[i],
+            linked_guids = { }
+         }
+         
+         local configurations = guid_configurations[project.guid]
+         for i = 1, #configurations do
+            local configuration = configurations[i]
+            project.name = project.name or configuration.name
+            project.vcxproj_path = project.vcxproj_path or configuration.vcxproj_path
+            project.has_debug = project.has_debug or configuration.vcxproj_has_debug
+            project.group_type = project.group_type or configuration.group.type
+            project.suffix = project.suffix or configuration.suffix
+
+            if not configuration.is_lib and #configuration.linked_configurations > 0 then
+               for i = 1, #configuration.linked_configurations do
+                  local linked_config = configuration.linked_configurations[i]
+                  if linked_config.vcxproj_guid then
+                     if not linked_guids[linked_config.vcxproj_guid] then
+                        linked_guids[linked_config.vcxproj_guid] = true
+                        project.linked_guids[#project.linked_guids + 1] = linked_config.vcxproj_guid
+                     end
+                  end
+               end
+            end
+         end
+
+         projects[#projects + 1] = project
+      end
+
       local sln_path = fs.compose_path(root_dir, 'msvc.sln')
       local sln_contents = fs.exists(sln_path) and fs.get_file_contents(sln_path)
-      local new_sln_contents = template('msvc_sln', { configurations = guid_configurations })
+      local new_sln_contents = template('msvc_sln', { projects = projects })
+
       if sln_contents ~= new_sln_contents then
          fs.put_file_contents(sln_path, new_sln_contents)
       end
