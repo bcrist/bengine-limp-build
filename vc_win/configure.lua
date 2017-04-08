@@ -134,10 +134,20 @@ function hooks.process (configured)
    be.log.warning('Skipping unsupported project type for ' .. configured.name)
 end
 
-function hooks.postprocess_begin ()
+function hooks.postprocess_begin (groups, projects, configs)
    make_meta_pdb_target()
 
-   if #guids > 0 then
+   local found_debug, found_release
+
+   for i = 1, #configs do
+      if configs[i] == 'debug' then
+         found_debug = true
+      elseif configs[i] == 'release' then
+         found_release = true
+      end
+   end
+
+   if found_debug and found_release and #guids > 0 then
       local projects = { }
       for i = 1, #guids do
          local linked_guids = { }
