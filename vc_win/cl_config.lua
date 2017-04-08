@@ -7,7 +7,6 @@ set_global('cl_base_flags', table.concat({
    '/showIncludes',
    '/utf-8',
    '/FS',
-   '/std:c++latest',
    '/Gd',   -- __cdecl calling convention
    '/Gm-',  -- Disable minimal rebuild
    '/Gy',   -- Enable function-level linking
@@ -104,6 +103,7 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
          option '/Zc:inline'  -- Remove unused symbols
       end
 
+      option '/std:c++latest'
       define 'BE_NO_LEAKCHECK' -- VLD installer only adds paths to MSBuild config, not vcvarsall.bat
       define 'BE_ID_EXTERNS'
       define 'NOMINMAX'
