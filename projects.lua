@@ -136,11 +136,18 @@ function configure_project (project, toolchain, configuration, configured_group)
 
    configured.include = expand_pathspec(configured.include or default_include_paths(configured), search_paths, configured, 'd?')
 
+   be.log.verbose('Expanding src patterns for ' .. configured.output_base, { ['Search Paths'] = be.util.sprint_r(search_paths) })
+
    if not configured.src then
-      configured.src = { expand_pathspec(default_source_patterns(configured), search_paths, configured) }
+      local original = default_source_patterns(configured)
+      local expanded = expand_pathspec(original, search_paths, configured)
+      be.log.verbose('Expanded src pattern', { Pattern = be.util.sprint_r(original), Results = be.util.sprint_r(expanded) })
+      configured.src = { expanded }
    else
       for i = 1, #configured.src do
-         local expanded = expand_pathspec(configured.src[i], search_paths, configured)
+         local original = configured.src[i]
+         local expanded = expand_pathspec(original, search_paths, configured)
+         be.log.verbose('Expanded src pattern', { Pattern = be.util.sprint_r(original), Results = be.util.sprint_r(expanded) })
          if expanded.pch_src and not expanded.pch then
             expanded.pch = 'pch.hpp'
          end
