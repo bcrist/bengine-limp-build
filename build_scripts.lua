@@ -1,6 +1,8 @@
 
 local fs = require('be.fs')
 
+current_build_script_path = nil
+
 build_scripts = {
    env = { }
 }
@@ -14,7 +16,11 @@ local function search_relative (path, parent_path)
       local contents = fs.get_file_contents(build_script)
       local fn = load(contents, '@' .. build_script .. '.lua', 'bt', build_scripts.env)
       n = n + 1
-      build_scripts[n] = fn
+      build_scripts[n] = function ()
+         current_build_script_path = build_script
+         fn()
+         current_build_script_path = nil
+      end
    end
 end
 

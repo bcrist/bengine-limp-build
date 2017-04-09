@@ -4,13 +4,6 @@ local groups = {
    all = { }
 }
 
-local default_directories = {
-   module = 'modules',
-   tool = 'tools',
-   demo = 'demos',
-   deps = 'dep_modules'
-}
-
 protected_config_properties = {
    name = true,
    suffix = true,
@@ -43,6 +36,7 @@ local function group (group_type, name)
       group = {
          name = name,
          type = group_type,
+         path = fs.parent_path(current_build_script_path),
          configurations = { },
          projects = { },
          fns = { },
@@ -121,13 +115,6 @@ function configure_group (group, toolchain, configuration)
       group.fns[f](configured)
    end
 
-   if not configured.path then
-      if configured.type == 'deps' then
-         configured.path = fs.compose_path(root_dir, default_directories.deps)
-      else
-         configured.path = fs.compose_path(root_dir, default_directories[configured.type], configured.name)
-      end
-   end
    configured.path = fs.canonical(configured.path)
    local search_paths = { configured.path, root_dir }
 
