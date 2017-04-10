@@ -51,8 +51,6 @@ make_rule 'cl' {
 }
 
 function configure_cl_flags (configured, define, disable_warning, option, name_suffix)
-   disable_warning(4592) -- symbol will be dynamically initialized - can probably be removed after VS2017
-
    if configured.force_cxx then
       name_suffix 'cxx'
       option '/TP'
