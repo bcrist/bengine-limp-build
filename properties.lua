@@ -53,6 +53,12 @@ function build_scripts.env.src (pathspec)
    end
 end
 
+function build_scripts.env.limp_src(pathspec)
+   return function (configured)
+      configured.limp_src = append_sequence({ pathspec }, configured.limp_src)
+   end
+end
+
 function build_scripts.env.link (spec)
    return function (configured)
       configured.link = append_sequence(spec, configured.link, true)

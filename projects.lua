@@ -153,7 +153,17 @@ function configure_project (project, toolchain, configuration, configured_group)
          end
          configured.src[i] = expanded
       end
-      
+   end
+
+   if not configured.limp_src then
+      configured.limp_src = { }
+   else
+      for i = 1, #configured.limp_src do
+         local original = configured.limp_src[i]
+         local expanded = expand_pathspec(original, search_paths, configured)
+         be.log.verbose('Expanded limp_src pattern', { Pattern = be.util.sprint_r(original), Results = be.util.sprint_r(expanded) })
+         configured.limp_src[i] = expanded
+      end
    end
 
    configured.link = interpolate_sequence(configured.link or { }, configured)

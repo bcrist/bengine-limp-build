@@ -102,6 +102,19 @@ function find_limp_targets (configured)
          end
       end
    end
+
+   for i = 1, #configured.limp_src do
+      local src_set = configured.limp_src[i]
+      for j = 1, #src_set do
+         local src_path = src_set[j]
+         local path = fs.compose_path(root_dir, src_path)
+         if fs.exists(path) then
+            if fs.get_file_contents(path):match('!!') then
+               make_limp_target(limp_target(src_path))
+            end
+         end
+      end
+   end
 end
 
 function make_meta_limp_target (t)

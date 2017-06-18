@@ -17,6 +17,7 @@ protected_config_properties = {
    configurations = true,
    configured_group = true,
    src = true,
+   limp_src = true,
    include = true,
    link = true,
    link_internal = true,
