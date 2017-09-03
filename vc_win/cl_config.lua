@@ -109,7 +109,9 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       define('SQLITE_WIN32_GETVERSIONEX', 0)
       define 'GLM_ENABLE_EXPERIMENTAL'
       define 'GLM_FORCE_SSE3'
+      option '/permissive-'
       option '/W4'          -- warning level 4
+      option '/w15038'      -- member initialization order
       option '/WX'          -- warnings are errors
       disable_warning(4065) -- switch with no case:
       disable_warning(4100) -- unreferenced parameter

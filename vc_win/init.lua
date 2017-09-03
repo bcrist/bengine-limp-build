@@ -14,7 +14,7 @@ make_rule 'build_boost' {
 pushd "%BOOST_HOME%" & $
 (if not exist b2.exe call bootstrap.bat) & $
 ((.\b2.exe "--stagedir=%~dp0]] .. ext_lib_dir() .. [[" "--build-dir=%~dp0]] .. build_dir() .. [[" $
---build-type=complete -d1 -j4 --with-system --with-locale --with-type_erasure $
+--build-type=complete -d1 -j4 --with-system --with-locale $
 define=BOOST_NO_RTTI define=BOOST_NO_TYPEID link=static threading=multi runtime-link=shared address-model=64 $
 stage > "%~dp0]] .. build_dir() .. [[\.boost_log" 2>&1 ) && $
 (move /Y "%~dp0]] .. ext_lib_dir() .. [[\lib\*.lib" "%~dp0]] .. ext_lib_dir() .. [[" && $
