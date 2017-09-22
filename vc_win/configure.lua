@@ -92,6 +92,30 @@ function hooks.preprocess_project (configured)
       local vcxproj = fs.get_file_contents(fs.compose_path(root_dir, configured.vcxproj_path))
       configured.vcxproj_guid = vcxproj:match '<ProjectGuid>{([%x%-]+)}</ProjectGuid>'
       configured.vcxproj_has_debug = (vcxproj:match '<ProjectConfiguration Include="debug%|x64">') ~= nil
+
+      local sp, ep = vcxproj:find('<ItemDefinitionGroup Condition="\'$(Configuration)|$(Platform)\'==\'' .. configured.configuration .. '|x64\'">', nil, true)
+      if ep then
+         local start, stop = ep, vcxproj:find('</ItemDefinitionGroup>', ep, true)
+         sp, ep = vcxproj:find('<AdditionalDependencies>', start, true)
+         if ep and ep < stop then
+            local prefix_end = ep
+            sp, ep = vcxproj:find('%(AdditionalDependencies)</AdditionalDependencies>', prefix_end, true)
+            if sp and sp < stop then
+               local suffix_start = sp
+               local libs = { }
+               for i = 1, #configured.link_internal do
+                  libs[#libs+1] = fs.path_filename(fs.replace_extension(configured.link_internal[i], '.lib'))
+               end
+               for i = 1, #configured.link do
+                  libs[#libs+1] = fs.replace_extension(configured.link[i], '.lib')
+               end
+               local new_vcxproj = vcxproj:sub(1, prefix_end) .. table.concat(libs, ';') .. ';' .. vcxproj:sub(suffix_start)
+               if new_vcxproj ~= vcxproj then
+                  fs.put_file_contents(fs.compose_path(root_dir, configured.vcxproj_path), new_vcxproj)
+               end
+            end
+         end
+      end
    end
 end
 
@@ -155,7 +179,7 @@ function hooks.postprocess_begin (groups, projects, configs)
             guid = guids[i],
             linked_guids = { }
          }
-         
+
          local configurations = guid_configurations[project.guid]
          for i = 1, #configurations do
             local configuration = configurations[i]
