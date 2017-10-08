@@ -120,8 +120,9 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       disable_warning(4324) -- struct padding due to alignas()
       disable_warning(4458) -- declaration hides class member
       disable_warning(4503) -- 'identifier' : decorated name length exceeded, name was truncated
+      disable_warning(4505) -- unreferenced local function has been removed
       disable_warning(5030) -- Unrecognized attribute
-      
+
       --disable_warning(4351) -- elements of array 'array' will be default initialized
 
       if configured.configuration == 'debug' then
@@ -151,4 +152,4 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       -- option '/sdl-' -- Disable extra SDL checks -- implied by /GS-
       option '/GS-'  -- Disable buffer overrun check
    end
-end 
+end
