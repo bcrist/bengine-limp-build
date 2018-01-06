@@ -102,11 +102,23 @@ function configure_init_end ()
 
    local boost_log_target = fs.compose_path(build_dir(), '.boost_log')
    make_build_boost_target(boost_log_target) { }
+
    make_phony_target '%BOOST_HOME%\\boost' {
       order_only_inputs = { boost_log_target }
    }
-
    add_init_target(make_lndir_target(fs.compose_path(ext_include_dir(), 'boost'), '%BOOST_HOME%\\boost') {
+      implicit_inputs = { (ext_include_dir()) }
+   })
+
+   --[[
+      If %BOOST_HOME% points to a git checkout and not an extracted boost release, then the boost headers directory
+      built with `b2 headers` will contain a bunch of relative-path symlinks to the libs directory, so we need to link
+      that in ext_include as well.
+   ]]
+   make_phony_target '%BOOST_HOME%\\libs' {
+      order_only_inputs = { boost_log_target }
+   }
+   add_init_target(make_lndir_target(fs.compose_path(ext_include_dir(), 'libs'), '%BOOST_HOME%\\libs') {
       implicit_inputs = { (ext_include_dir()) }
    })
 
@@ -135,7 +147,7 @@ function configure_clean ()
    make_phony_target 'clean!' {
       inputs = clean_targets
    }
-   
+
    local function rmdir_target (dir, implicit_inputs)
       add_deinit_target(make_rmdir_target('rm_' .. dir .. '_dir!') {
          path = get_directory(dir),
@@ -146,7 +158,7 @@ function configure_clean ()
    rmdir_target('build', clean_targets)
    rmdir_target('out', clean_targets)
    rmdir_target('include', clean_targets)
-   
+
    rmdir_target('ext_include', clean_targets)
    rmdir_target('ext_lib', clean_targets)
 

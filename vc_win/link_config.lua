@@ -44,6 +44,8 @@ make_rule 'pdb' {
 }
 
 function configure_link_flags (configured, disable_warning, option, name_suffix)
+   option '/ERRORREPORT:PROMPT'
+
    if configured.console then
       name_suffix 'console'
       option '/SUBSYSTEM:CONSOLE'

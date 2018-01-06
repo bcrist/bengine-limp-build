@@ -18,7 +18,8 @@ set_global('cl_base_flags', table.concat({
    '/w44746', -- Enable volatile access warning
    '/Qpar',
    '/Zc:rvalueCast',
-   '/diagnostics:column'
+   '/diagnostics:caret',
+   '/errorReport:prompt'
 }, ' '), cl_flags_global_group)
 
 set_global('cl_base_defines', serialize_defines {
@@ -78,6 +79,11 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
       define 'BOOST_NO_TYPEID'
       define 'BOOST_NO_RTTI'
    end
+
+   -- TODO remove these when boost has been updated to avoid these
+   define '_SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING'
+   define '_SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING'
+   define '_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING'
 
    if configured.is_ext_lib then
       name_suffix 'extlib'
