@@ -85,6 +85,8 @@ function configure_cl_flags (configured, define, disable_warning, option, name_s
    define '_SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING'
    define '_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING'
 
+   define 'BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE'
+
    if configured.is_ext_lib then
       name_suffix 'extlib'
       option '/GA'    -- TLS Optimization
